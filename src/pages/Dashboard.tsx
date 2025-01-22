@@ -25,6 +25,7 @@ interface SubSubCategory {
 
 function Dashboard() {
   const { user } = useAuth();
+  console.log(user)
   const [documentType, setDocumentType] = useState('Category');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubCategory, setSelectedSubCategory] = useState('');
@@ -53,7 +54,7 @@ function Dashboard() {
   const fetchCategories = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:3000/api/documents/categories', {
+      const response = await axios.get('http://localhost:4000/api/documents/categories', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setCategories(response.data);

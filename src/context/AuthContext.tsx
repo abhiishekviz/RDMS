@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   user: any;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
   register: (userData: any) => Promise<void>;
 }
 
@@ -20,16 +20,28 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    // Initialize state from localStorage
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
+  const [user, setUser] = useState<any>(() => {
+    // Initialize user from localStorage
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  axios.defaults.baseURL = 'http://localhost:3000/api';
   axios.defaults.withCredentials = true;
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await axios.post('/auth/login', { email, password });
-      setUser(response.data);
+      const response = await axios.post('http://localhost:4000/routes/login', { email, password });
+      const userData = response.data;
+
+      // Persist state in localStorage
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('user', JSON.stringify(userData));
+
+      setUser(userData);
       setIsAuthenticated(true);
     } catch (error) {
       throw error;
@@ -37,15 +49,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    // Clear state and localStorage
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('user');
+
     setIsAuthenticated(false);
     setUser(null);
-    window.location.href = '/login'; // Force redirect to login page
+
+    window.location.href = '/login'; // Redirect to login page
   };
 
   const register = async (userData: any) => {
     try {
-      await axios.post('api/auth/register', userData);
+      await axios.post('http://localhost:4000/routes/register', userData);
     } catch (error) {
       throw error;
     }

@@ -6,7 +6,7 @@ import SubSubCategory from '../models/SubSubCategory.js';
 import Document from '../models/Document.js';
 import auth from '../middleware/auth.js';
 
-const router = express.Router();
+const documentRoutes = express.Router();
 
 // Configure multer for file upload
 const storage = multer.memoryStorage();
@@ -24,7 +24,7 @@ const upload = multer({
 });
 
 // Get Categories
-router.get('/categories', auth, async (req, res) => {
+documentRoutes.get('/categories', auth, async (req, res) => {
   try {
     console.log('Fetching categories...');
     const categories = await Category.find().sort({ Name: 1 });
@@ -37,7 +37,7 @@ router.get('/categories', auth, async (req, res) => {
 });
 
 // Add Category
-router.post('/categories', auth, async (req, res) => {
+documentRoutes.post('/categories', auth, async (req, res) => {
   try {
     const { name, code } = req.body;
     const lastCategory = await Category.findOne().sort({ _id: -1 });
@@ -58,7 +58,7 @@ router.post('/categories', auth, async (req, res) => {
 });
 
 // Get SubCategories by Category
-router.get('/subcategories/:catId', auth, async (req, res) => {
+documentRoutes.get('/subcategories/:catId', auth, async (req, res) => {
   try {
     console.log('Fetching subcategories for category:', req.params.catId);
     const subCategories = await SubCategory.find({ 
@@ -73,7 +73,7 @@ router.get('/subcategories/:catId', auth, async (req, res) => {
 });
 
 // Add SubCategory
-router.post('/subcategories', auth, async (req, res) => {
+documentRoutes.post('/subcategories', auth, async (req, res) => {
   try {
     const { name, Cat_id } = req.body;
     const lastSubCategory = await SubCategory.findOne().sort({ _id: -1 });
@@ -94,7 +94,7 @@ router.post('/subcategories', auth, async (req, res) => {
 });
 
 // Get SubSubCategories by SubCategory
-router.get('/subsubcategories/:subCatId', auth, async (req, res) => {
+documentRoutes.get('/subsubcategories/:subCatId', auth, async (req, res) => {
   try {
     console.log('Fetching subsubcategories for subcategory:', req.params.subCatId);
     const subSubCategories = await SubSubCategory.find({ 
@@ -109,7 +109,7 @@ router.get('/subsubcategories/:subCatId', auth, async (req, res) => {
 });
 
 // Add SubSubCategory
-router.post('/subsubcategories', auth, async (req, res) => {
+documentRoutes.post('/subsubcategories', auth, async (req, res) => {
   try {
     const { name, Cat_id, SubCat_id, code } = req.body;
     const lastSubSubCategory = await SubSubCategory.findOne().sort({ _id: -1 });
@@ -132,7 +132,7 @@ router.post('/subsubcategories', auth, async (req, res) => {
 });
 
 // Upload Document
-router.post('/upload', auth, upload.single('file'), async (req, res) => {
+documentRoutes.post('/upload', auth, upload.single('file'), async (req, res) => {
   try {
     const { 
       form,
@@ -179,7 +179,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
 });
 
 // Search Documents
-router.get('/search', auth, async (req, res) => {
+documentRoutes.get('/search', auth, async (req, res) => {
   try {
     const { keyword, category, subCategory, subSubCategory, startDate, endDate } = req.query;
     
@@ -224,4 +224,4 @@ router.get('/search', auth, async (req, res) => {
   }
 });
 
-export default router;
+export default documentRoutes;

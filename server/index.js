@@ -1,37 +1,36 @@
-
-const dotenv= require('dotenv')
-const express = require('express')
-const cors = require('cors');
-const verifyToken = require('../middleware/auth.js')
-const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser')
-const authRoutes = require('../routes/auth.js')
-const documentRoutes = require('../routes/Document.js');
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import documentRoutes from './routes/document.js';
+import routes from './routes/auth.js';
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
 const corsOptions = {
-  origin: 'http://localhost:5175',  // Allow your frontend URL
-  credentials: true,                // Allow cookies to be sent with the request
+  origin: 'http://localhost:5173', 
+  credentials: true,              
 };
 
-app.use(cors(corsOptions));  
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
-// Routes
-app.use('/api/auth', authRoutes);
 
-// Protected route example
-app.get('/api/dashboard', verifyToken, (req, res) => {
-  res.json({ message: 'Welcome to dashboard', user: req.user });
+
+app.use('/routes', routes);
+
+app.use('/api/documents',documentRoutes);
+
+app.get('/api/dashboard', (req, res) => {
+  res.json({ message: 'Welcome to the dashboard' });
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 

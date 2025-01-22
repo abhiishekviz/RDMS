@@ -10,6 +10,7 @@ import SearchDocument from './pages/SearchDocument';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAuth();
+  console.log(isAuthenticated);
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
 
